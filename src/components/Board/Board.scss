@@ -1,0 +1,31 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.board_row {
+  display: flex;
+  gap: 5px;
+  .valid {
+    background-color: yellow;
+    border: none;
+  }
+  .invalid {
+    background-color: darkgray;
+    border: none;
+  }
+  .correctPosition {
+    background-color: green;
+    border: none;
+  }
+}
+
+.board_row  div {
+  height: 50px;
+  width: 50px;
+  border: 1px solid black;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

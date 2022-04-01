@@ -1,0 +1,29 @@
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.keyboard_row {
+  display: flex;
+  gap: 5px;
+}
+.keyboard_row .key {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: lightgray;
+  cursor: pointer;
+
+}
+.keyboard_row .valid {
+  background-color: yellow;
+
+}
+.keyboard_row .invalid {
+  background-color: rgb(100, 98, 98);
+  
+}
+.keyboard_row .correctPosition {
+  background-color: green;
+  
+}
