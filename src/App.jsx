@@ -20,6 +20,16 @@ const App = () => {
                                         ["", "", "", "", ""]
 
                                       ])
+  
+const [letterStyle, setLetterStyle] = useState([
+                                      ["", "", "", "", ""],
+                                      ["", "", "", "", ""],
+                                      ["", "", "", "", ""],
+                                      ["", "", "", "", ""],
+                                      ["", "", "", "", ""],
+                                      ["", "", "", "", ""]
+
+                                  ])                                    
   const [currentRow, setCurrentRow] = useState(0)
   const [currentCol, setCurrentCol] = useState(0)
   const [invalidKeys, setInvalidKeys] = useState([])
@@ -28,6 +38,8 @@ const App = () => {
 
   const d = new Date().getDate()
 
+  
+  
   useEffect(() => {
     
     const schedule = require('node-schedule');
@@ -85,48 +97,83 @@ const App = () => {
   }, [words, d])
 
 
+
+  const handleStyling = attemptedWord => {
+    
+    const tempStyleArr = [...letterStyle]
+    const todaysWordArr = todaysWord.word.split('')
+    
+    for(let i = 0; i < 5; i++) {
+      
+      if (attemptedWord[i].toLowerCase() === todaysWord.word[i]) {
+        console.log('correct')
+        tempStyleArr[currentRow][i] = "correctPosition"
+        todaysWordArr.splice(i, 1)
+        if (!correctPositionKeys.includes(attemptedWord[i])) setCorrectPositionKeys(k => [...k, attemptedWord[i]])
+      } 
+      else if (todaysWordArr.includes(attemptedWord[i].toLowerCase())) {
+        tempStyleArr[currentRow][i] = "valid"
+        if (!correctPositionKeys.includes(attemptedWord[i]) && !validKeys.includes(attemptedWord[i])) setValidKeys(k => [...k, attemptedWord[i]])
+      }
+      else {
+        tempStyleArr[currentRow][i] = "invalid"
+        if (!invalidKeys.includes(attemptedWord[i])) setInvalidKeys(k => [...k, attemptedWord[i]])
+      } 
+    }   
+      
+    setLetterStyle(tempStyleArr)
+  }
+
+
+  
+  const onEnter = () => {
+    
+    if (currentCol < 5) alert("Not enough letters!")
+    
+    else if (currentCol === 5) {
+      const attemptedWord = board[currentRow][0] + board[currentRow][1] + board[currentRow][2] + board[currentRow][3] + board[currentRow][4]
+      
+      if (words.includes(attemptedWord.toLowerCase())) {
+
+        handleStyling(attemptedWord)
+        
+        if (todaysWord.word === attemptedWord.toLowerCase()) {
+          setCurrentRow(6)
+          setCurrentCol(6)
+          alert("You win!")
+        } 
+        else if (currentRow === 5) alert(`Todays word was ${todaysWord.word}`)
+        else {
+          setCurrentRow(r => r < 5 ? r + 1 : r)
+          setCurrentCol(0)
+        }
+        
+      } else alert("Word not in list!")
+      
+    }
+
+  }
+
+
+
+  const onDelete = () => {
+
+    if (currentCol > 0) {
+      const tempBoard = [...board]
+      tempBoard[currentRow][currentCol-1] = ""
+      setBoard(tempBoard)
+      setCurrentCol(c => c - 1)
+    } 
+
+  }
   
   
   
   const handleKeyClick = keyVal => {
     
-    if (keyVal === "Enter") {
-      
-      if (currentCol < 5) alert("Not enough letters!")
-      
-      else if (currentCol === 5) {
-        const attemptedWord = board[currentRow][0] + board[currentRow][1] + board[currentRow][2] + board[currentRow][3] + board[currentRow][4]
-        
-        if (words.includes(attemptedWord.toLowerCase())) {
-          
-          if (todaysWord.word === attemptedWord.toLowerCase()) {
-            alert("You win!")
-            setCurrentRow(6)
-            setCurrentCol(6)
-          } 
-          else if (currentRow === 5) alert(`Todays word was ${todaysWord.word}`)
-          else {
-            setCurrentRow(r => r < 5 ? r + 1 : r)
-            setCurrentCol(0)
-          }
-          
-        } else alert("Word not in list!")
-        
-      }
-
-    } 
+    if (keyVal === "Enter") onEnter()
     
-    
-    else if (keyVal === "Delete") {
-        
-      if (currentCol > 0) {
-          
-          const tempBoard = [...board]
-          tempBoard[currentRow][currentCol-1] = ""
-          setBoard(tempBoard)
-          setCurrentCol(c => c - 1)
-        } 
-    } 
+    else if (keyVal === "Delete") onDelete()
     
     else {
       
@@ -154,7 +201,7 @@ const App = () => {
       </nav>
       
       <main>
-        {play ? (<AppContext.Provider value={{board, handleKeyClick, todaysWord, currentRow, invalidKeys, setInvalidKeys, validKeys, setValidKeys, correctPositionKeys, setCorrectPositionKeys}}>
+        {play ? (<AppContext.Provider value={{board, handleKeyClick, todaysWord, currentRow, invalidKeys, setInvalidKeys, validKeys, setValidKeys, correctPositionKeys, setCorrectPositionKeys, letterStyle}}>
             <Board/>
             <Keyboard />
           </AppContext.Provider>) : <h2>You can play only between 8pm-9pm!</h2>}
